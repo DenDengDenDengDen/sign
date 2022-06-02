@@ -1,0 +1,76 @@
+ <html>
+ <body>
+ 
+	<div>walletName: <input id="walletName" name="walletName" type="text" /></div>
+	<div>chainId: <input id="chainId" name="chainId" type="text" /></div>
+	<div>contract: <input id="verifyingContract" name="verifyingContract" type="text" /></div>
+	<div>txId: <input id="txId" name="txId" type="text" /></div>
+	<div>nonce: <input id="nonce" name="nonce" type="text" /></div>
+	<div>deadline: <input id="deadline" name="deadline" type="text" /></div>
+	<div><button onclick="sign()">生成签名</button></div>
+	
+	<div id="content"></div>
+	<script src="ether5.2umd.50ed9.js" charset="utf-8"></script>
+	<script>
+		function test(){
+		alert(1)
+		}
+		async function sign(){
+			var _walletName = document.getElementById("walletName").value;
+			var _chainId = document.getElementById("chainId").value;
+			var _contract = document.getElementById("verifyingContract").value;
+			var _txId = document.getElementById("txId").value;
+			var _nonce = document.getElementById("nonce").value;
+			var _deadline = document.getElementById("deadline").value;
+			
+
+		    const domain = {
+		        name: _walletName,
+		        version: '1',
+		        chainId: _chainId,
+				verifyingContract: _contract
+		    }
+		    const types = {
+		        Transaction: [
+		            {name: 'txId', type: 'uint256'},
+		            {name: 'nonce', type: 'uint256'},
+					{name: 'deadline', type: 'uint256'}
+		        ]
+		    }
+		    //let _myAddress = "0xE66Eb4D3845822568938664B06b676Dc2C33a6fB"
+		    let message = {
+				txId:_txId,
+				nonce:_nonce,
+				deadline:_deadline
+			}
+			
+		    //var provider = new ethers.providers.StaticJsonRpcProvider(RPC_URL, netWorkId);
+			//this.signer = new ethers.Wallet("87d31684774d26037566706ce8cdb2c14b805e4274d9b3cb14948195b12bce34", provider)
+			
+			provider = new ethers.providers.Web3Provider(web3.currentProvider);
+		    this.signer = provider.getSigner();
+		    //
+			
+			console.log(this.signer);
+
+		    const signResult = await this.signer._signTypedData(domain, types, message)
+			var str = "<li>sign: "+signResult+"</li>"
+			console.log(signResult);
+		    const signature = signResult.substring(2);
+		    const r = "0x" + signature.substring(0, 64);
+		    const s = "0x" + signature.substring(64, 128);
+		    const v = parseInt(signature.substring(128, 130), 16);
+		    //console.log("signature",message)
+		    console.log("v",v)
+		    console.log("s",s)
+		    console.log("r",r)
+			str += "<li>r: "+r+"</li>"
+			str += "<li>s: "+s+"</li>"
+			str += "<li>v: "+v+"</li>"
+			document.getElementById("content").innerHTML = str;
+		}
+		
+		//setTimeout(sign,1000)
+	</script>
+</body>
+</html>
